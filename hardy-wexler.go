@@ -21,7 +21,7 @@ import (
 
 var (
 	//original Wexler coefficients for Wexler's equation to compute vapor pressure over water
-	wexlerCoeff = [8]float64{-2.8365744e3, -6.028076559e3, 1.954263612e1, -2.737830188e-2, 1.6261698e-5, 7.0229056e-10, -1.8680009e-13, 2.7150305}
+	wexlerCoeff = [8]float64{-2.9912729e3, -6.0170128e3, 1.887643854e1, -2.8354721e-2, 1.7838301e-5, -8.4150417e-10, 4.4412543e-13, 2.858487}
 
 	//ITS-90 coefficients using the Wexler's equation for computing vapor pressure over water
 	its90coeff = [8]float64{-2.8365744e3, -6.028076559e3, 1.954263612e1, -2.737830188e-2, 1.6261698e-5, 7.0229056e-10, -1.8680009e-13, 2.7150305}
@@ -29,14 +29,15 @@ var (
 
 //Computes wexlersEquation using the passed coefficients
 func wexlersEquation(tempInC float64, coeffs [8]float64) float64 {
+	tempInK := tempInC + 273.15
 	val := math.Exp(
 		func() float64 {
 			val := float64(0.0)
 			for i := 0; i < 7; i++ {
-				val += coeffs[i] * math.Pow(tempInC, float64(i-2))
+				val += coeffs[i] * math.Pow(tempInK, float64(i-2))
 			}
 			return val
-		}() + coeffs[7]*math.Log(tempInC))
+		}() + coeffs[7]*math.Log(tempInK))
 
 	if math.IsInf(val, 1) || math.IsInf(val, -1) || math.IsNaN(val) {
 		return math.NaN() //force +/-Inf
@@ -46,7 +47,7 @@ func wexlersEquation(tempInC float64, coeffs [8]float64) float64 {
 }
 
 /*VaporPressureOverWaterITS90 returns the water vapor pressure
-(in kPa) over liquid water as per http://www.rhs.com/papers/its90form.pdf given
+(in Pa) over liquid water as per http://www.rhs.com/papers/its90form.pdf given
 a sensor temperature (in C).  For more information, please see
 
 	Hardy, B., 1998, ITS-90 Formulations for Vapor Pressure, Frostpoint Temperature, Dewpoint
@@ -61,7 +62,7 @@ func VaporPressureOverWaterITS90(tempInC float64) float64 {
 }
 
 /*VaporPressureOverWaterWexler76 returns the water vapor pressure
-(in kPa) over liquid water as per the original Wexler-1976 paper:
+(in Pa) over liquid water as per the original Wexler-1976 paper:
 	Wexler, A., Vapor Pressure Formulation for Water in Range 0 to 100°C. A Revision, Journal of Research of
 	the National Bureau of Standards – A. Physics and Chemistry, September – December 1976, Vol. 80A, Nos.
 	5 and 6, 775-785

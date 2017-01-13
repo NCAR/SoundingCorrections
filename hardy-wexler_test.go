@@ -37,14 +37,16 @@ func Test_wexlersEquation(t *testing.T) {
 
 	tests := []x{
 		x{in: math.NaN(), out: math.NaN()},
-		x{in: 0, out: math.NaN(), coeffs: [8]float64{1, 1, 1, 1, 1, 1, 1, 1}},
-		x{in: 1, out: 1096.6331584284585, coeffs: [8]float64{1, 1, 1, 1, 1, 1, 1, 1}},
+		x{in: 0, out: 0, coeffs: [8]float64{1, 1, 1, 1, 1, 1, 1, 1}},
+		x{in: 1, out: 0, coeffs: [8]float64{1, 1, 1, 1, 1, 1, 1, 1}},
 		x{in: 1, out: 1},
 	}
 
 	for _, x := range tests {
 		v := wexlersEquation(x.in, x.coeffs)
 		if !nanChecker(x.out, v) {
+			t.Log("In: ", x.in)
+			t.Log("Coeff", x.coeffs)
 			t.Log("Got: ", v)
 			t.Log("Wnt: ", x.out)
 			t.Error("Didint get the correct value for the output")
@@ -54,8 +56,10 @@ func Test_wexlersEquation(t *testing.T) {
 
 func Test_VaporPressureOverWaterITS90(t *testing.T) {
 	for in, out := range map[float64]float64{
-		1:          0,
+		1:          657.0806266167413,
 		math.NaN(): math.NaN(),
+		0.0:        611.2129106975888,
+		-50.0:      6.437948772985935,
 	} {
 		if got := VaporPressureOverWaterITS90(in); !nanChecker(out, got) {
 			t.Log("In ", in)
@@ -68,8 +72,10 @@ func Test_VaporPressureOverWaterITS90(t *testing.T) {
 
 func Test_VaporPressureOverWaterWexler76(t *testing.T) {
 	for in, out := range map[float64]float64{
-		1:          0,
+		1:          657.0694165167837,
 		math.NaN(): math.NaN(),
+		0.0:        611.2129098607411,
+		-50.0:      6.445011485594395,
 	} {
 		if got := VaporPressureOverWaterWexler76(in); !nanChecker(out, got) {
 			t.Log("In ", in)
